@@ -14,7 +14,7 @@ var wrench = require('wrench');
 var settings = {};
 settings.CONFIG_FILE = 'config.xml';
 settings.SPLASH_FILE   = 'splash.png';
-settings.DESTINATION   = 'resources/splashes/';
+settings.DESTINATION   = 'resources/launch_screens/';
 settings.IOS_SPLASHES = [
   { name: 'iphone_2x.png', width: 640, height:960 },
   { name: 'iphone5.png', width: 640, height:1136 },
