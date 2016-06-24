@@ -1,7 +1,7 @@
 {
-  "name": "cordova-splash",
-  "version": "0.7.1",
-  "description": "Automatic splash screen cropping for Cordova",
+  "name": "meteor-cordova-splash",
+  "version": "0.1.0",
+  "description": "Automatic splash screen cropping for Meteor wiith Cordova",
   "main": "index.js",
   "preferGlobal": "true",
   "directories": {
@@ -12,20 +12,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/AlexDisler/cordova-splash.git"
+    "url": "git@github.com:emilbryggare/meteor-cordova-splash.git"
   },
   "keywords": [
+    "meteor",
     "cordova",
     "splash",
+    "generate",
     "splashscreen",
+    "launchscreen",
     "crop"
   ],
-  "author": "Alex Disler",
+  "author": "Emil Bryggare",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AlexDisler/cordova-splash/issues"
+    "url": "https://github.com/emilbryggare/meteor-cordova-splash/issues"
   },
-  "homepage": "https://github.com/AlexDisler/cordova-splash",
+  "homepage": "https://github.com/emilbryggare/meteor-cordova-splash",
   "dependencies": {
     "colors": "^0.6.2",
     "imagemagick": "^0.1.3",
