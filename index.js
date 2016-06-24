@@ -8,79 +8,36 @@ var Q      = require('q');
 var wrench = require('wrench');
 
 /**
- * Check which platforms are added to the project and return their splash screen names and sizes
- *
- * @param  {String} projectName
- * @return {Promise} resolves with an array of platforms
- */
-var getPlatforms = function (projectName) {
-  var deferred = Q.defer();
-  var platforms = [];
-  platforms.push({
-    name : 'ios',
-    // TODO: use async fs.exists
-    isAdded : fs.existsSync('platforms/ios'),
-    splashPath : 'platforms/ios/' + projectName + '/Images.xcassets/LaunchImage.launchimage/',
-    splash : [
-      // iPhone
-      { name: 'Default~iphone.png',            width: 320,  height: 480  },
-      { name: 'Default@2x~iphone.png',         width: 640,  height: 960  },
-      { name: 'Default-568h@2x~iphone.png',    width: 640,  height: 1136 },
-      { name: 'Default-667h.png',              width: 750,  height: 1334 },
-      { name: 'Default-736h.png',              width: 1242, height: 2208 },
-      { name: 'Default-Landscape-736h.png',    width: 2208, height: 1242 },
-      // iPad
-      { name: 'Default-Portrait~ipad.png',     width: 768,  height: 1024 },
-      { name: 'Default-Portrait@2x~ipad.png',  width: 1536, height: 2048 },
-      { name: 'Default-Landscape~ipad.png',    width: 1024, height: 768  },
-      { name: 'Default-Landscape@2x~ipad.png', width: 2048, height: 1536 }
-    ]
-  });
-  platforms.push({
-    name : 'android',
-    isAdded : fs.existsSync('platforms/android'),
-    splashPath : 'platforms/android/res/',
-    splash : [
-      // Landscape
-      { name: 'drawable-land-ldpi/screen.png',  width: 320,  height: 200  },
-      { name: 'drawable-land-mdpi/screen.png',  width: 480,  height: 320  },
-      { name: 'drawable-land-hdpi/screen.png',  width: 800,  height: 480  },
-      { name: 'drawable-land-xhdpi/screen.png', width: 1280, height: 720  },
-      { name: 'drawable-land-xxhdpi/screen.png', width: 1600, height: 960  },
-      { name: 'drawable-land-xxxhdpi/screen.png', width: 1920, height: 1280  },
-      // Portrait
-      { name: 'drawable-port-ldpi/screen.png',  width: 200,  height: 320  },
-      { name: 'drawable-port-mdpi/screen.png',  width: 320,  height: 480  },
-      { name: 'drawable-port-hdpi/screen.png',  width: 480,  height: 800  },
-      { name: 'drawable-port-xhdpi/screen.png', width: 720,  height: 1280 },
-      { name: 'drawable-port-xxhdpi/screen.png', width: 960, height: 1600  },
-      { name: 'drawable-port-xxxhdpi/screen.png', width: 1280, height: 1920  }
-    ]
-  });
-  platforms.push({
-    name : 'windows',
-    isAdded : fs.existsSync('platforms/windows'),
-    splashPath : 'platforms/windows/images/',
-    splash : [
-      { name: 'SplashScreen.scale-100.png', width: 620,  height: 300  },
-      { name: 'SplashScreen.scale-125.png', width: 775,  height: 375  },
-      { name: 'SplashScreen.scale-150.png', width: 930,  height: 450  },
-      { name: 'SplashScreen.scale-200.png', width: 1240, height: 600  },
-      { name: 'SplashScreen.scale-400.png', width: 2480, height: 1200 }
-    ]
-  });
-  deferred.resolve(platforms);
-  return deferred.promise;
-};
-
-
-/**
  * @var {Object} settings - names of the config file and of the splash image
  * TODO: add option to get these values as CLI params
  */
 var settings = {};
 settings.CONFIG_FILE = 'config.xml';
 settings.SPLASH_FILE   = 'splash.png';
+settings.DESTINATION   = 'resources/splashes/';
+settings.IOS_SPLASHES = [
+  { name: 'ios/iphone_2x.png', width: 640, height:960 },
+  { name: 'ios/iphone5.png', width: 640, height:1136 },
+  { name: 'ios/iphone6.png', width: 750, height:1334 },
+  { name: 'ios/iphone6p_portrait.png', width: 1242, height:2208 },
+  { name: 'ios/iphone6p_landscape.png', width: 2208, height:1242 },
+  { name: 'ios/ipad_portrait.png', width: 768, height:1024 },
+  { name: 'ios/ipad_portrait_2x.png', width: 1536, height:2048 },
+  { name: 'ios/ipad_landscape.png', width: 1024, height:768 },
+  { name: 'ios/ipad_landscape_2x.png', width: 2048, height:1536 },
+]
+settings.ANDROID_SPLASHES = [
+    // Landscape
+    { name: 'android/android_mdpi_landscape.png',  width: 470,  height: 320  },
+    { name: 'android/android_hdpi_landscape.png',  width: 640,  height: 480  },
+    { name: 'android/android_xhdpi_landscape.png',  width: 960,  height: 720  },
+    { name: 'android/android_xxhdpi_landscape.png',  width: 1440,  height: 1080  },
+    // Portrait
+    { name: 'android/android_mdpi_portrait.png',  width: 320,  height: 470  },
+    { name: 'android/android_hdpi_portrait.png',  width: 480,  height: 640  },
+    { name: 'android/android_xhdpi_portrait.png',  width: 720,  height: 960  },
+    { name: 'android/android_xxhdpi_portrait.png',  width: 1080,  height: 1440  },
+]
 
 /**
  * @var {Object} console utils
@@ -101,43 +58,16 @@ display.header = function (str) {
 };
 
 /**
- * read the config file and get the project name
- *
- * @return {Promise} resolves to a string - the project's name
- */
-var getProjectName = function () {
-  var deferred = Q.defer();
-  var parser = new xml2js.Parser();
-  data = fs.readFile(settings.CONFIG_FILE, function (err, data) {
-    if (err) {
-      deferred.reject(err);
-    }
-    parser.parseString(data, function (err, result) {
-      if (err) {
-        deferred.reject(err);
-      }
-      var projectName = result.widget.name[0];
-      deferred.resolve(projectName);
-    });
-  });
-  return deferred.promise;
-};
-
-/**
  * Crops and creates a new splash in the platform's folder.
  *
  * @param  {Object} platform
  * @param  {Object} splash
  * @return {Promise}
  */
-var generateSplash = function (platform, splash) {
+var generateSplash = function (splash) {
   var deferred = Q.defer();
   var srcPath = settings.SPLASH_FILE;
-  var platformPath = srcPath.replace(/\.png$/, '-' + platform.name + '.png');
-  if (fs.existsSync(platformPath)) {
-    srcPath = platformPath;
-  }
-  var dstPath = platform.splashPath + splash.name;
+  var dstPath = settings.DESTINATION + splash.name;
   var dst = path.dirname(dstPath);
   if (!fs.existsSync(dst)) {
     wrench.mkdirSyncRecursive(dst);
@@ -168,11 +98,21 @@ var generateSplash = function (platform, splash) {
  */
 var generateSplashForPlatform = function (platform) {
   var deferred = Q.defer();
-  display.header('Generating splash screen for ' + platform.name);
+  display.header('Generating splash screen for ' + platform);
+
+  var splashes = [];
+  if (platform == 'all') {
+    splashes = settings.IOS_SPLASHES.concat(settings.ANDROID_SPLASHES)
+  } else if (platform == 'ios') {
+    splashes = settings.IOS_SPLASHES
+  } else if (platform == 'android') {
+    splashes = settings.ANDROID_SPLASHES
+  }
+
   var all = [];
   var splashes = platform.splash;
   splashes.forEach(function (splash) {
-    all.push(generateSplash(platform, splash));
+    all.push(generateSplash(splash));
   });
   Q.all(all).then(function () {
     deferred.resolve();
@@ -188,40 +128,23 @@ var generateSplashForPlatform = function (platform) {
  * @param  {Array} platforms
  * @return {Promise}
  */
-var generateSplashes = function (platforms) {
+var generateSplashes = function (platform) {
   var deferred = Q.defer();
-  var sequence = Q();
-  var all = [];
-  _(platforms).where({ isAdded : true }).forEach(function (platform) {
-    sequence = sequence.then(function () {
-      return generateSplashForPlatform(platform);
-    });
-    all.push(sequence);
-  });
-  Q.all(all).then(function () {
-    deferred.resolve();
-  });
-  return deferred.promise;
-};
+  display.header('Generating splash screen for ' + platform);
 
-/**
- * Checks if at least one platform was added to the project
- *
- * @return {Promise} resolves if at least one platform was found, rejects otherwise
- */
-var atLeastOnePlatformFound = function () {
-  var deferred = Q.defer();
-  getPlatforms().then(function (platforms) {
-    var activePlatforms = _(platforms).where({ isAdded : true });
-    if (activePlatforms.length > 0) {
-      display.success('platforms found: ' + _(activePlatforms).pluck('name').join(', '));
-      deferred.resolve();
-    } else {
-      display.error('No cordova platforms found. Make sure you are in the root folder of your Cordova project and add platforms with \'cordova platform add\'');
-      deferred.reject();
-    }
+  var splashes = [];
+  if (platform == 'all') {
+    splashes = settings.IOS_SPLASHES.concat(settings.ANDROID_SPLASHES)
+  } else if (platform == 'ios') {
+    splashes = settings.IOS_SPLASHES
+  } else if (platform == 'android') {
+    splashes = settings.ANDROID_SPLASHES
+  }
+  var all = [];
+  splashes.forEach(function (splash) {
+    all.push(generateSplash(splash));
   });
-  return deferred.promise;
+  return Promise.all(all);
 };
 
 /**
@@ -230,6 +153,7 @@ var atLeastOnePlatformFound = function () {
  * @return {Promise} resolves if exists, rejects otherwise
  */
 var validSplashExists = function () {
+  display.header('Checking Splash');
   var deferred = Q.defer();
   fs.exists(settings.SPLASH_FILE, function (exists) {
     if (exists) {
@@ -244,30 +168,36 @@ var validSplashExists = function () {
 };
 
 /**
- * Checks if a config.xml file exists
+ * Receives selected platforms for command line input.
  *
  * @return {Promise} resolves if exists, rejects otherwise
  */
-var configFileExists = function () {
+var getPlatforms = function () {
+  display.header('Checking Arguments');
   var deferred = Q.defer();
-  fs.exists(settings.CONFIG_FILE, function (exists) {
-    if (exists) {
-      display.success(settings.CONFIG_FILE + ' exists');
-      deferred.resolve();
-    } else {
-      display.error('cordova\'s ' + settings.CONFIG_FILE + ' does not exist in the root folder');
+  var args = process.argv.slice(2);
+  switch (args.length) {
+    case 0:
+      var platform = 'all';
+      display.success('Selected all platforms.');
+      deferred.resolve(platform);
+      break;
+    case 1:
+      var platform = args[0];
+      if (platform == 'ios' || platform == 'android') {
+        display.success('Selected ' + args[0]);
+        deferred.resolve(platform);
+        break;
+      }
+    default:
+      display.error('Usage: meteor-cordova-icon [ios||android].');
       deferred.reject();
-    }
-  });
+      break;
+  }
   return deferred.promise;
 };
 
-display.header('Checking Project & Splash');
-
-atLeastOnePlatformFound()
-.then(validSplashExists)
-.then(configFileExists)
-.then(getProjectName)
+validSplashExists()
 .then(getPlatforms)
 .then(generateSplashes)
 .catch(function (err) {
