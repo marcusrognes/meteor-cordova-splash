@@ -6,7 +6,7 @@ The generated images will be placed in resources/launch_screens/
 
 ### Installation
 
-    $ npm install meteor-cordova-splash
+    $ npm install meteor-cordova-splash -g
 
 ### Requirements
 
