@@ -1,6 +1,6 @@
 {
   "name": "meteor-cordova-splash",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Automatic splash screen cropping for Meteor wiith Cordova",
   "main": "index.js",
   "preferGlobal": "true",
