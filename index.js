@@ -28,15 +28,15 @@ settings.IOS_SPLASHES = [
 ];
 settings.ANDROID_SPLASHES = [
   // Landscape
-  {name: 'android_mdpi_landscape.png', width: 470, height: 320},
-  {name: 'android_hdpi_landscape.png', width: 640, height: 480},
-  {name: 'android_xhdpi_landscape.png', width: 960, height: 720},
-  {name: 'android_xxhdpi_landscape.png', width: 1440, height: 1080},
+  {name: 'android_mdpi_landscape.png', width: 480, height: 320},
+  {name: 'android_hdpi_landscape.png', width: 800, height: 480},
+  {name: 'android_xhdpi_landscape.png', width: 1280, height: 720},
+  {name: 'android_xxhdpi_landscape.png', width: 1440, height: 960},
   // Portrait
-  {name: 'android_mdpi_portrait.png', width: 320, height: 470},
-  {name: 'android_hdpi_portrait.png', width: 480, height: 640},
-  {name: 'android_xhdpi_portrait.png', width: 720, height: 960},
-  {name: 'android_xxhdpi_portrait.png', width: 1080, height: 1440}
+  {name: 'android_mdpi_portrait.png', width: 320, height: 480},
+  {name: 'android_hdpi_portrait.png', width: 480, height: 800},
+  {name: 'android_xhdpi_portrait.png', width: 720, height: 1280},
+  {name: 'android_xxhdpi_portrait.png', width: 960, height: 1440}
 ];
 
 /**
