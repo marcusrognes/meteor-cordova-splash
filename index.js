@@ -1,10 +1,10 @@
-var fs     = require('fs');
-var path   = require('path');
+var fs = require('fs');
+var path = require('path');
 var xml2js = require('xml2js');
-var ig     = require('imagemagick');
+var ig = require('imagemagick');
 var colors = require('colors');
-var _      = require('underscore');
-var Q      = require('q');
+var _ = require('underscore');
+var Q = require('q');
 var wrench = require('wrench');
 
 /**
@@ -13,31 +13,31 @@ var wrench = require('wrench');
  */
 var settings = {};
 settings.CONFIG_FILE = 'config.xml';
-settings.SPLASH_FILE   = 'splash.png';
-settings.DESTINATION   = 'resources/launch_screens/';
+settings.SPLASH_FILE = 'splash.png';
+settings.DESTINATION = 'resources/launch_screens/';
 settings.IOS_SPLASHES = [
-  { name: 'iphone_2x.png', width: 640, height:960 },
-  { name: 'iphone5.png', width: 640, height:1136 },
-  { name: 'iphone6.png', width: 750, height:1334 },
-  { name: 'iphone6p_portrait.png', width: 1242, height:2208 },
-  { name: 'iphone6p_landscape.png', width: 2208, height:1242 },
-  { name: 'ipad_portrait.png', width: 768, height:1024 },
-  { name: 'ipad_portrait_2x.png', width: 1536, height:2048 },
-  { name: 'ipad_landscape.png', width: 1024, height:768 },
-  { name: 'ipad_landscape_2x.png', width: 2048, height:1536 },
-]
+  {name: 'iphone_2x.png', width: 640, height: 960},
+  {name: 'iphone5.png', width: 640, height: 1136},
+  {name: 'iphone6.png', width: 750, height: 1334},
+  {name: 'iphone6p_portrait.png', width: 1242, height: 2208},
+  {name: 'iphone6p_landscape.png', width: 2208, height: 1242},
+  {name: 'ipad_portrait.png', width: 768, height: 1024},
+  {name: 'ipad_portrait_2x.png', width: 1536, height: 2048},
+  {name: 'ipad_landscape.png', width: 1024, height: 768},
+  {name: 'ipad_landscape_2x.png', width: 2048, height: 1536}
+];
 settings.ANDROID_SPLASHES = [
-    // Landscape
-    { name: 'android_mdpi_landscape.png',  width: 470,  height: 320  },
-    { name: 'android_hdpi_landscape.png',  width: 640,  height: 480  },
-    { name: 'android_xhdpi_landscape.png',  width: 960,  height: 720  },
-    { name: 'android_xxhdpi_landscape.png',  width: 1440,  height: 1080  },
-    // Portrait
-    { name: 'android_mdpi_portrait.png',  width: 320,  height: 470  },
-    { name: 'android_hdpi_portrait.png',  width: 480,  height: 640  },
-    { name: 'android_xhdpi_portrait.png',  width: 720,  height: 960  },
-    { name: 'android_xxhdpi_portrait.png',  width: 1080,  height: 1440  },
-]
+  // Landscape
+  {name: 'android_mdpi_landscape.png', width: 470, height: 320},
+  {name: 'android_hdpi_landscape.png', width: 640, height: 480},
+  {name: 'android_xhdpi_landscape.png', width: 960, height: 720},
+  {name: 'android_xxhdpi_landscape.png', width: 1440, height: 1080},
+  // Portrait
+  {name: 'android_mdpi_portrait.png', width: 320, height: 470},
+  {name: 'android_hdpi_portrait.png', width: 480, height: 640},
+  {name: 'android_xhdpi_portrait.png', width: 720, height: 960},
+  {name: 'android_xxhdpi_portrait.png', width: 1080, height: 1440}
+];
 
 /**
  * @var {Object} console utils
@@ -79,7 +79,7 @@ var generateSplash = function (splash) {
     format: 'png',
     width: splash.width,
     height: splash.height
-  } , function(err, stdout, stderr){
+  }, function (err, stdout, stderr) {
     if (err) {
       deferred.reject(err);
     } else {
@@ -102,11 +102,11 @@ var generateSplashForPlatform = function (platform) {
 
   var splashes = [];
   if (platform == 'all') {
-    splashes = settings.IOS_SPLASHES.concat(settings.ANDROID_SPLASHES)
+    splashes = settings.IOS_SPLASHES.concat(settings.ANDROID_SPLASHES);
   } else if (platform == 'ios') {
-    splashes = settings.IOS_SPLASHES
+    splashes = settings.IOS_SPLASHES;
   } else if (platform == 'android') {
-    splashes = settings.ANDROID_SPLASHES
+    splashes = settings.ANDROID_SPLASHES;
   }
 
   var all = [];
@@ -198,12 +198,12 @@ var getPlatforms = function () {
 };
 
 validSplashExists()
-.then(getPlatforms)
-.then(generateSplashes)
-.catch(function (err) {
-  if (err) {
-    console.log(err);
-  }
-}).then(function () {
+  .then(getPlatforms)
+  .then(generateSplashes)
+  .catch(function (err) {
+    if (err) {
+      console.log(err);
+    }
+  }).then(function () {
   console.log('');
 });
